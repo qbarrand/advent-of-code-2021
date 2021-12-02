@@ -7,10 +7,18 @@ import (
 	"io"
 	"log"
 	"os"
+
+	"github.com/qbarrand/advent-of-code-2021/util"
 )
 
 func main() {
-	fd, err := os.Open("input.txt")
+	cli, err := util.ParseCommandLine(os.Args[0], os.Args[1:])
+	if err != nil {
+		os.Exit(1)
+		log.Fatalf("Could not parse the command line: %v", err)
+	}
+
+	fd, err := os.Open(cli.InputFile)
 	if err != nil {
 		log.Fatal(err)
 	}
