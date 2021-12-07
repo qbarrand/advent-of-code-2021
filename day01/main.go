@@ -6,19 +6,14 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"os"
 
 	"github.com/qbarrand/advent-of-code-2021/util"
 )
 
 func main() {
-	cli, err := util.ParseCommandLine(os.Args[0], os.Args[1:])
-	if err != nil {
-		os.Exit(1)
-		log.Fatalf("Could not parse the command line: %v", err)
-	}
+	cl := util.ParseCommandLine()
 
-	fd := util.MustOpen(cli.InputFile)
+	fd := util.MustOpen(cl.InputFile)
 	defer fd.Close()
 
 	var (
@@ -29,9 +24,7 @@ func main() {
 	)
 
 	for i := 1; ; i++ {
-		_, err = fmt.Fscanf(fd, "%d", &v)
-
-		if err != nil {
+		if _, err := fmt.Fscanf(fd, "%d", &v); err != nil {
 			if errors.Is(err, io.EOF) {
 				break
 			}

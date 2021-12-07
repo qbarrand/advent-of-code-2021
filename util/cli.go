@@ -6,12 +6,12 @@ type CommandLine struct {
 	InputFile string
 }
 
-func ParseCommandLine(programName string, args []string) (*CommandLine, error) {
+func ParseCommandLine() *CommandLine {
 	cli := CommandLine{}
 
-	fs := flag.NewFlagSet(programName, flag.ContinueOnError)
+	flag.StringVar(&cli.InputFile, "i", "input.txt", "name of the input file")
 
-	fs.StringVar(&cli.InputFile, "i", "input.txt", "name of the input file")
+	flag.Parse()
 
-	return &cli, fs.Parse(args)
+	return &cli
 }

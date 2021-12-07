@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"log"
-	"os"
 	"strconv"
 
 	"github.com/qbarrand/advent-of-code-2021/util"
@@ -67,10 +66,7 @@ func scanCommaSeparatedInts(data []byte, atEOF bool) (advance int, token []byte,
 }
 
 func main() {
-	cl, err := util.ParseCommandLine(os.Args[0], os.Args[1:])
-	if err != nil {
-		log.Fatalf("Error while parsing the command line: %v", err)
-	}
+	cl := util.ParseCommandLine()
 
 	fd := util.MustOpen(cl.InputFile)
 	defer fd.Close()
@@ -81,7 +77,7 @@ func main() {
 	s.Split(scanCommaSeparatedInts)
 
 	for s.Scan() {
-		if err = s.Err(); err != nil {
+		if err := s.Err(); err != nil {
 			log.Fatalf("Error while scanning: %v", err)
 		}
 

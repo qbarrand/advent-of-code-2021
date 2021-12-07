@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"log"
-	"os"
 	"strconv"
 	"strings"
 
@@ -71,10 +70,7 @@ func (g grid) markAndGetScore(line, index int) int {
 }
 
 func main() {
-	cl, err := util.ParseCommandLine(os.Args[0], os.Args[1:])
-	if err != nil {
-		log.Fatalf("Error parsing the command-line: %v", err)
-	}
+	cl := util.ParseCommandLine()
 
 	fd := util.MustOpen(cl.InputFile)
 	defer fd.Close()
@@ -105,7 +101,7 @@ func main() {
 	numMembership := make(map[int][]posInGrid)
 
 	for i := 0; s.Scan(); i++ {
-		if err = s.Err(); err != nil {
+		if err := s.Err(); err != nil {
 			log.Fatalf("Error while reading grids: %v", err)
 		}
 

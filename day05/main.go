@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"os"
 
 	"github.com/qbarrand/advent-of-code-2021/util"
 )
@@ -32,10 +31,7 @@ func min(i, j int) int {
 }
 
 func main() {
-	cl, err := util.ParseCommandLine(os.Args[0], os.Args[1:])
-	if err != nil {
-		log.Fatalf("Could not parse the command-line: %v", err)
-	}
+	cl := util.ParseCommandLine()
 
 	fd := util.MustOpen(cl.InputFile)
 	defer fd.Close()

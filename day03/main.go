@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"math"
-	"os"
 	"strconv"
 
 	"github.com/qbarrand/advent-of-code-2021/util"
@@ -85,10 +84,7 @@ func pow(a, b int) int {
 }
 
 func main() {
-	cl, err := util.ParseCommandLine(os.Args[0], os.Args[1:])
-	if err != nil {
-		log.Fatalf("Could not parse the command line: %v", err)
-	}
+	cl := util.ParseCommandLine()
 
 	fd := util.MustOpen(cl.InputFile)
 	defer fd.Close()
@@ -98,7 +94,7 @@ func main() {
 		tree = &node{}
 	)
 
-	if _, err = fmt.Fscanf(fd, "%s", &line); err != nil {
+	if _, err := fmt.Fscanf(fd, "%s", &line); err != nil {
 		log.Fatalf("Could not read the first line: %v", err)
 	}
 
@@ -111,7 +107,7 @@ func main() {
 	parseLine(cols, line)
 
 	for i := 2; ; i++ {
-		if _, err = fmt.Fscanf(fd, "%s", &line); err != nil {
+		if _, err := fmt.Fscanf(fd, "%s", &line); err != nil {
 			if errors.Is(err, io.EOF) {
 				break
 			}
