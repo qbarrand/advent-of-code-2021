@@ -72,10 +72,7 @@ func main() {
 		log.Fatalf("Error while parsing the command line: %v", err)
 	}
 
-	fd, err := os.Open(cl.InputFile)
-	if err != nil {
-		log.Fatalf("Could not open the input file: %v", err)
-	}
+	fd := util.MustOpen(cl.InputFile)
 	defer fd.Close()
 
 	fishes := make([]int, 0)

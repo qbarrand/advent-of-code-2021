@@ -16,10 +16,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fd, err := os.Open(cli.InputFile)
-	if err != nil {
-		log.Fatalf("Could not open %s: %v", cli.InputFile, err)
-	}
+	fd := util.MustOpen(cli.InputFile)
 	defer fd.Close()
 
 	var (

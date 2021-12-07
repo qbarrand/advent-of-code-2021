@@ -18,10 +18,7 @@ func main() {
 		log.Fatalf("Could not parse the command line: %v", err)
 	}
 
-	fd, err := os.Open(cli.InputFile)
-	if err != nil {
-		log.Fatal(err)
-	}
+	fd := util.MustOpen(cli.InputFile)
 	defer fd.Close()
 
 	var (
