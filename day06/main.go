@@ -9,6 +9,44 @@ import (
 	"github.com/qbarrand/advent-of-code-2021/util"
 )
 
+type cacheKey struct {
+	rounds int
+	start  int
+}
+
+var cache = make(map[cacheKey]int)
+
+func run(start int, rounds int) (res int) {
+	ck := cacheKey{
+		rounds: rounds,
+		start:  start,
+	}
+
+	defer func() {
+		if _, ok := cache[ck]; !ok {
+			cache[ck] = res
+		}
+	}()
+
+	if v, ok := cache[ck]; ok {
+		res = v
+		return
+	}
+
+	if rounds == 0 {
+		res = 1
+		return
+	}
+
+	if start == 0 {
+		res = run(6, rounds-1) + run(8, rounds-1)
+		return
+	}
+
+	res = run(start-1, rounds-1)
+	return
+}
+
 func scanCommaSeparatedInts(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	for i := 0; i < len(data); i++ {
 		if data[i] == ',' {
@@ -60,20 +98,14 @@ func main() {
 		fishes = append(fishes, int(n))
 	}
 
-	for i := 0; i < 80; i++ {
-		var newFishes []int
+	part1 := 0
+	part2 := 0
 
-		for j := 0; j < len(fishes); j++ {
-			if fishes[j] == 0 {
-				fishes[j] = 6
-				newFishes = append(newFishes, 8)
-			} else {
-				fishes[j]--
-			}
-		}
-
-		fishes = append(fishes, newFishes...)
+	for _, i := range fishes {
+		part1 += run(i, 80)
+		part2 += run(i, 256)
 	}
 
-	log.Printf("Part 1: %d", len(fishes))
+	log.Printf("Part 1: %d", part1)
+	log.Printf("Part 2: %d", part2)
 }
