@@ -92,8 +92,6 @@ func main() {
 		nums = append(nums, int(i))
 	}
 
-	log.Printf("%v", nums)
-
 	s := bufio.NewScanner(fd)
 	s.Split(bufio.ScanWords)
 
@@ -140,7 +138,6 @@ func main() {
 
 	// Now, let's play
 	for _, n := range nums {
-		log.Printf("n=%d", n)
 		for _, pos := range numMembership[n] {
 			if g := grids[pos.grid]; !g.won {
 				if score := g.markAndGetScore(pos.line, pos.index); score > 0 {
