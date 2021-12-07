@@ -52,7 +52,8 @@ func main() {
 	fd := util.MustOpen(cl.InputFile)
 	defer fd.Close()
 
-	fishes := make([]int, 0)
+	part1 := 0
+	part2 := 0
 
 	s := bufio.NewScanner(fd)
 	s.Split(util.ScanCommaSeparatedInts)
@@ -69,15 +70,8 @@ func main() {
 			log.Fatalf("Could not parse %q as an integer: %v", t, err)
 		}
 
-		fishes = append(fishes, int(n))
-	}
-
-	part1 := 0
-	part2 := 0
-
-	for _, i := range fishes {
-		part1 += run(i, 80)
-		part2 += run(i, 256)
+		part1 += run(int(n), 80)
+		part2 += run(int(n), 256)
 	}
 
 	log.Printf("Part 1: %d", part1)
