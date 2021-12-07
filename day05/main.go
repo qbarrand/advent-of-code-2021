@@ -14,22 +14,6 @@ type point struct {
 	y int
 }
 
-func max(i, j int) int {
-	if i >= j {
-		return i
-	}
-
-	return j
-}
-
-func min(i, j int) int {
-	if i <= j {
-		return i
-	}
-
-	return j
-}
-
 func main() {
 	cl := util.ParseCommandLine()
 
@@ -53,7 +37,7 @@ func main() {
 		}
 
 		if p1.x == p2.x {
-			for i := min(p1.y, p2.y); i <= max(p1.y, p2.y); i++ {
+			for i := util.MinInt(p1.y, p2.y); i <= util.MaxInt(p1.y, p2.y); i++ {
 				p := point{p1.x, i}
 
 				verticalHorizontal[p]++
@@ -62,7 +46,7 @@ func main() {
 		}
 
 		if p1.y == p2.y {
-			for i := min(p1.x, p2.x); i <= max(p1.x, p2.x); i++ {
+			for i := util.MinInt(p1.x, p2.x); i <= util.MaxInt(p1.x, p2.x); i++ {
 				p := point{i, p1.y}
 
 				verticalHorizontal[p]++

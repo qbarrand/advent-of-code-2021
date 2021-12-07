@@ -13,14 +13,7 @@ func getFuel(pos []int, midPoint int, moveCost func(int) int) int {
 	res := 0
 
 	for _, p := range pos {
-		var distance int
-
-		if p > midPoint {
-			distance = p - midPoint
-		} else {
-			distance = midPoint - p
-		}
-
+		distance := util.MaxInt(p, midPoint) - util.MinInt(p, midPoint)
 		res += moveCost(distance)
 	}
 
