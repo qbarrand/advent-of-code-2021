@@ -20,7 +20,7 @@ func main() {
 
 	r := bufio.NewReader(fd)
 
-	lengths := make(map[int]int)
+	part1 := 0
 
 	for {
 		if _, err := r.ReadString('|'); err != nil {
@@ -40,9 +40,13 @@ func main() {
 		}
 
 		for _, w := range []string{w0, w1, w2, w3} {
-			lengths[len(w)]++
+			L := len(w)
+
+			if L == 2 || L == 3 || L == 4 || L == 7 {
+				part1 += 1
+			}
 		}
 	}
 
-	log.Print("Part 1: ", lengths[2]+lengths[4]+lengths[3]+lengths[7])
+	log.Print("Part 1: ", part1)
 }
