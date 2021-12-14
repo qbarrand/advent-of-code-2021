@@ -1,41 +1,83 @@
 package main
 
 import (
-	"container/ring"
+	"bufio"
 	"errors"
-	"fmt"
 	"io"
 	"log"
+	"sort"
 
 	"github.com/qbarrand/advent-of-code-2021/util"
 )
 
-type grid [][]int
+type coord struct{ x, y int }
 
-func (g grid) risks() int {
-	s := 0
+type basinFinder struct {
+	grid    grid
+	visited map[coord]bool
+}
 
-	for idx, i := range g[1] {
-		if idx > 0 && g[1][idx] >= g[1][idx-1] {
-			continue
-		}
+func newBasinFinder(g grid) *basinFinder {
+	return &basinFinder{
+		grid:    g,
+		visited: make(map[coord]bool),
+	}
+}
 
-		if idx < len(g[1])-1 && g[1][idx] >= g[1][idx+1] {
-			continue
-		}
+func (bf *basinFinder) getSize(x, y int) int {
+	c := coord{x: x, y: y}
 
-		if g[0] != nil && i >= g[0][idx] {
-			continue
-		}
+	v := bf.grid[y][x]
 
-		if g[2] != nil && i >= g[2][idx] {
-			continue
-		}
-
-		s += i + 1
+	if bf.visited[c] || v == 9 {
+		return 0
 	}
 
-	return s
+	bf.visited[c] = true
+
+	size := 1
+
+	if x > 0 && bf.grid[y][x-1] > v {
+		size += bf.getSize(x-1, y)
+	}
+
+	if x < len(bf.grid[y])-1 && bf.grid[y][x+1] > v {
+		size += bf.getSize(x+1, y)
+	}
+
+	if y > 0 && bf.grid[y-1][x] > v {
+		size += bf.getSize(x, y-1)
+	}
+
+	if y < len(bf.grid)-1 && bf.grid[y+1][x] > v {
+		size += bf.getSize(x, y+1)
+	}
+
+	return size
+}
+
+type grid [][]int
+
+func (g grid) isLowPoint(x, y int) bool {
+	v := g[y][x]
+
+	if x > 0 && v >= g[y][x-1] {
+		return false
+	}
+
+	if x < len(g[y])-1 && v >= g[y][x+1] {
+		return false
+	}
+
+	if y > 0 && v >= g[y-1][x] {
+		return false
+	}
+
+	if y < len(g)-1 && v >= g[y+1][x] {
+		return false
+	}
+
+	return true
 }
 
 func main() {
@@ -44,63 +86,60 @@ func main() {
 	fd := util.MustOpen(cl.InputFile)
 	defer fd.Close()
 
-	const bufferSize = 3
-
 	var (
-		g     = make(grid, bufferSize)
-		ints  []int
-		line  string
-		r     = ring.New(bufferSize)
-		rInit = false
-		s     = 0
+		g          = make(grid, 0)
+		line       = make([]int, 0)
+		lineLength = 0
+		part1      = 0
+		basinSizes = make([]int, 0)
+		r          = bufio.NewReader(fd)
 	)
 
 	for i := 0; ; i++ {
-		if _, err := fmt.Fscanf(fd, "%s", &line); err != nil {
+		i, err := r.ReadByte()
+		if err != nil {
 			if errors.Is(err, io.EOF) {
-				g[0] = r.Prev().Prev().Value.([]int)
-				g[1] = r.Prev().Value.([]int)
-				g[2] = nil
-
-				s += g.risks()
-
 				break
 			}
 
-			log.Fatalf("Could not read line %d: %v", i+1, err)
+			log.Fatalf("Could not read a byte: %v", err)
 		}
 
-		if !rInit {
-			for i := 0; i < bufferSize; i++ {
-				r.Value = make([]int, len(line))
-				r = r.Next()
-			}
+		if i == '\n' {
+			g = append(g, line)
+			line = make([]int, lineLength)
 
-			rInit = true
+			continue
 		}
 
-		ints = r.Value.([]int)
-
-		for idx, c := range line {
-			ints[idx] = int(c - '0')
+		if i == 0 {
+			lineLength++
 		}
 
-		if i == 1 {
-			g[0] = nil
-			g[1] = r.Prev().Value.([]int)
-
-		} else if i > 1 {
-			g[0] = r.Prev().Prev().Value.([]int)
-			g[1] = r.Prev().Value.([]int)
-		}
-
-		g[2] = ints
-
-		s += g.risks()
-
-		r.Value = ints
-		r = r.Next()
+		line = append(line, int(i-'0'))
 	}
 
-	log.Printf("Part 1: %d", s)
+	for y := 0; y < len(g); y++ {
+		for x := 0; x < len(g[y]); x++ {
+			if g.isLowPoint(x, y) {
+				part1 += g[y][x] + 1
+
+				basinSizes = append(
+					basinSizes,
+					newBasinFinder(g).getSize(x, y),
+				)
+			}
+		}
+	}
+
+	sort.Ints(basinSizes)
+
+	part2 := basinSizes[len(basinSizes)-1]
+
+	for i := 0; i < 2; i++ {
+		part2 *= basinSizes[len(basinSizes)-2-i]
+	}
+
+	log.Print("Part 1: ", part1)
+	log.Print("Part 2: ", part2)
 }
