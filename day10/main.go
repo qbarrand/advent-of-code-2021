@@ -5,23 +5,33 @@ import (
 	"errors"
 	"io"
 	"log"
+	"sort"
 
 	"github.com/qbarrand/advent-of-code-2021/util"
 )
 
-var pairs = map[byte]byte{
-	'(': ')',
-	'[': ']',
-	'{': '}',
-	'<': '>',
-}
+var (
+	pairs = map[byte]byte{
+		'(': ')',
+		'[': ']',
+		'{': '}',
+		'<': '>',
+	}
 
-var scores = map[byte]int{
-	')': 3,
-	']': 57,
-	'}': 1197,
-	'>': 25137,
-}
+	mapPart1Scores = map[byte]int{
+		')': 3,
+		']': 57,
+		'}': 1197,
+		'>': 25137,
+	}
+
+	mapPart2Scores = map[byte]int{
+		'(': 1,
+		'[': 2,
+		'{': 3,
+		'<': 4,
+	}
+)
 
 type node struct {
 	b    byte
@@ -58,9 +68,10 @@ func main() {
 	defer fd.Close()
 
 	var (
-		r     = bufio.NewReader(fd)
-		score = 0
-		st    = &stack{}
+		r           = bufio.NewReader(fd)
+		part1       = 0
+		part2Scores = make([]int, 0)
+		st          = &stack{}
 	)
 
 	for {
@@ -74,6 +85,20 @@ func main() {
 		}
 
 		if b == '\n' {
+			score := 0
+
+			for {
+				b, err = st.pop()
+				if err != nil {
+					break
+				}
+
+				score *= 5
+				score += mapPart2Scores[b]
+			}
+
+			part2Scores = append(part2Scores, score)
+
 			st.clear()
 			continue
 		}
@@ -87,15 +112,20 @@ func main() {
 			}
 
 			if pairs[open] != b {
-				score += scores[b]
+				part1 += mapPart1Scores[b]
 
-				_, err := r.ReadBytes('\n')
-				if err != nil {
+				if _, err := r.ReadBytes('\n'); err != nil {
 					log.Fatalf("could not read till the next line: %v", err)
 				}
+
+				st.clear()
+				continue
 			}
 		}
 	}
 
-	log.Print("Part 1: ", score)
+	sort.Ints(part2Scores)
+
+	log.Print("Part 1: ", part1)
+	log.Print("Part 2: ", part2Scores[len(part2Scores)/2])
 }
